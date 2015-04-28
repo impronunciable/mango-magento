@@ -1,0 +1,65 @@
+<?php $helper = Mage::helper('mango'); ?>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+      var cardtypes = {VI: 'visa', MC: 'mastercard', AE: 'amex' };
+      var MangoPay = window.MangoPay || {};
+
+      MangoPay.methodCode = '<?php echo $helper->getMethodCode(); ?>';
+      MangoPay.targetForm = '#payment_form_<?php echo $helper->getMethodCode(); ?>';
+      Mango.setPublicKey('<?php echo $helper->getPublicKey(); ?>');
+
+      Object.extend(Payment.prototype, {
+        save: function () {
+          if (checkout.loadWaiting != false) return;
+
+          var validator = new Validation(this.form);
+          if (this.validate() && validator.validate()) {
+            checkout.setLoadWaiting('payment');
+            var fn = this[this.currentMethod + 'Save'].bind(this);
+            if (typeof fn === 'function') {
+              fn();
+            } else {
+              var request = new Ajax.Request(this.saveUrl, {
+                method:'post',
+                onComplete: this.onComplete,
+                onSuccess: this.onSave,
+                onFailure: checkout.ajaxFailure.bind(checkout),
+                parameters: Form.serialize(this.form)
+              });
+            }
+          }
+        },
+        mangoSave: function () {
+          try {
+            Mango.token.create({
+              number: jQuery('#' + MangoPay.methodCode + '_cc_number').val(),
+              ccv: jQuery('#' + MangoPay.methodCode + '_cc_cid').val(),
+              exp_month: jQuery('#' + MangoPay.methodCode + '_expiration').val(),
+              exp_year: jQuery('#' + MangoPay.methodCode + '_expiration_yr').val(),
+              cardtype: cardtypes[jQuery('#' + MangoPay.methodCode + '_cc_type').val()],
+              holdername: jQuery('#' + MangoPay.methodCode + '_cc_holdername').val()
+            }, this.mangoResponse.bind(this));
+          } catch (error) {
+            checkout.setLoadWaiting(false);
+            alert(error);
+          }
+        },
+        mangoResponse: function (error, data) {
+          if (error) {
+            checkout.setLoadWaiting(false);
+            alert(Translator.translate(error).stripTags());
+          } else {
+            jQuery('#mango_token').val(data['uid']);
+            jQuery(MangoPay.targetForm + ' input[type=text], ' + MangoPay.targetForm + ' select').removeAttr('name');
+            new Ajax.Request(this.saveUrl, {
+              method: 'post',
+              onComplete: this.onComplete,
+              onSuccess: this.onSave,
+              onFailure: checkout.ajaxFailure.bind(checkout),
+              parameters: Form.serialize(this.form)
+            });
+          }
+        }
+      });
+    });
+</script>

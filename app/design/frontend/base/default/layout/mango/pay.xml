@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <checkout_onepage_index>
+        <reference name="before_body_end">
+            <block type="core/text" name="mango_api" after="-">
+                <action method="setText">
+                    <text>
+                        <![CDATA[
+                            <script type="text/javascript" src="https://js.getmango.com/v1/"></script>
+                        ]]>
+                    </text>
+                </action>
+            </block>
+            <block type="core/template" name="mango_js" after="-">
+                <action method="setTemplate">
+                    <template>mango/pay/js.phtml</template>
+                </action>
+            </block>
+        </reference>
+    </checkout_onepage_index>
+</layout>

@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+       <Mango_Pay>
+          <version>0.1.0</version>
+       </Mango_Pay>
+    </modules>
+    <frontend>
+        <layout>
+            <updates>
+                <mango_pay>
+                    <file>mango/pay.xml</file>
+                </mango_pay>
+            </updates>
+        </layout>
+    </frontend>
+    <global>
+      <blocks>
+        <mango>
+          <class>Mango_Pay_Block</class>
+        </mango>
+      </blocks>
+
+      <helpers>
+        <mango>
+          <class>Mango_Pay_Helper</class>
+        </mango>
+      </helpers>
+
+      <models>
+        <mango>
+          <class>Mango_Pay_Model</class>
+        </mango>
+      </models>
+    </global>
+
+    <default>
+        <payment>
+            <mango>
+                <active>0</active>
+                <model>mango/standard</model>
+                <api_url>https://api.getmango.com</api_url>
+                <order_status>1</order_status>
+                <title>Credit Card (Mango)</title>
+                <cctypes>AE,VI,MC</cctypes>
+                <payment_action>authorize_capture</payment_action>
+                <avssuccess>A,B,C,D,G,I,M,N,P,R,S,T,U,W,X,Y,Z</avssuccess>
+                <responses></responses>
+                <allowspecific>0</allowspecific>
+            </mango>
+         </payment>
+    </default>
+</config>
